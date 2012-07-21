@@ -34,7 +34,7 @@ public final class Application extends JFrame {
       public void run() {
         Application application = new Application();
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        application.setTitle("Range Slider Example");
+        application.setTitle("Range Slider Example - #" + System.getProperty("build.number"));
         application.setContentPane(new JLabel("Range Slider Example"));
 
         application.setLocationRelativeTo(null);
