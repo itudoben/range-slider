@@ -17,3 +17,6 @@
  */
 
 This project contains a range slider that allows selecting a range from a timeline as in the time range selector used in the Google stock page.
+
+A Java webstart example can be launched from here:
+http://johnny.hujol.free.fr/rangeslider/
