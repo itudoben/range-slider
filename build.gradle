@@ -87,6 +87,13 @@ task(run, dependsOn: "jar", type: JavaExec) {
   }
 }
 
+task toto {
+  def env = System.getenv()
+  println env['USER']
+}
+
+def env = System.getenv()
+
 task release(dependsOn: ['clean', 'copyLibs', 'copyRes', 'jar']) {
   doLast {
 
@@ -104,9 +111,9 @@ task release(dependsOn: ['clean', 'copyLibs', 'copyRes', 'jar']) {
     //    println '**' + passphrase + '**'
 
     ant.signjar(
-        keystore: '/Users/hujol/jhkeystore',
+        keystore: env['KEYSTORE_JH'],
         storepass: 'change me',
-        alias: "jh",
+        alias: env['KEYSTORE_JH_ALIAS'],
         keypass: 'change me'
     ) {
       fileset(dir: 'build/libs') {
@@ -136,8 +143,8 @@ dependencies {
 atRemoteDir = 'rangeslider/'
 
 task ftp << {
-  //  def console = System.console()
-  //  def passphrase = console.readPassword('%s: ', 'Please enter the FTP password')
+//    def console = System.console()
+//    def passphrase = console.readPassword('%s: ', 'Please enter the FTP password')
 
   ant {
     taskdef(
@@ -146,8 +153,8 @@ task ftp << {
         classpath: configurations.ftpAntTask.asPath
     )
     ftp(
-        server: "ftpperso.free.fr",
-        userid: "johnny.hujol",
+        server: env['WEBSITE_FTP_SERVER'],
+        userid: env['WEBSITE_FTP_USER_NAME'],
         password: 'change me',
         action: 'send',
         remotedir: atRemoteDir,

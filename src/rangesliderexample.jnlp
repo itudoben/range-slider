@@ -33,11 +33,10 @@
   </security>
 
   <resources>
-    <property name="build.number" value="replace-build.number"/>
-    <property name="useProductionDB" value="true"/>
     <j2se version="1.6+"
           href="http://java.sun.com/products/autodl/j2se"
         />
+    <property name="build.number" value="replace-build.number"/>
     <jar href="range-slider-replace-build.number.jar" main="true"/>
     <!--<jar href="commons-collections_3.2.jar"/>-->
   </resources>
