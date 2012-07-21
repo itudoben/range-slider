@@ -28,20 +28,20 @@ import javax.swing.JLabel;
  */
 public final class Application extends JFrame {
 
-    public static void main(String[] args) {
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                Application application = new Application();
-                application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                application.setTitle("Range Slider Example");
-                application.setContentPane(new JLabel("Range Slider Example"));
+  public static void main(String[] args) {
+    final Runnable runnable = new Runnable() {
+      @Override
+      public void run() {
+        Application application = new Application();
+        application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        application.setTitle("Range Slider Example");
+        application.setContentPane(new JLabel("Range Slider Example"));
 
-                application.setLocationRelativeTo(null);
-                application.setSize(400, 300);
-                application.setVisible(true);
-            }
-        };
-        EventQueue.invokeLater(runnable);
-    }
+        application.setLocationRelativeTo(null);
+        application.setSize(400, 300);
+        application.setVisible(true);
+      }
+    };
+    EventQueue.invokeLater(runnable);
+  }
 }

@@ -1,0 +1,160 @@
+/*
+ * RangeSlider allows a range selection from time line.
+ * Copyright (C) <2011-2012>  <itudoben at gmail dot com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import java.text.SimpleDateFormat
+
+apply plugin: 'java'
+
+defaultTasks 'clean', 'compileTest'
+
+version = new SimpleDateFormat('yyyy.MM.dd.HHmmss').format(new Date())
+
+configurations {
+  compile {
+    description = 'compile classpath'
+    transitive = true
+  }
+
+  runtime {
+    extendsFrom compile
+  }
+}
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src/java'
+    }
+    resources {
+      srcDir 'res'
+    }
+  }
+}
+
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar', '*.zip'])
+}
+
+sourceCompatibility = 6
+targetCompatibility = 6
+
+jar {
+  archiveName = 'range-slider-' + version + '.jar'
+}
+
+task copyLibs(type: Copy) {
+  from('libs') {
+    include '*.jar'
+  }
+  from('libs') {
+    include '*.zip'
+  }
+  into 'build/libs'
+}
+
+task copyRes(type: Copy) {
+  from('src') {
+    include '*.jnlp'
+  }
+  into 'build'
+}
+
+task(run, dependsOn: "jar", type: JavaExec) {
+  doFirst {
+    main = 'com.jh.rangeslider.Application'
+    systemProperties = ['sswing.defaultlaf': 'com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel',
+        'com.apple.mrj.application.apple.menu.about.name': 'Range Slider Example']
+    maxHeapSize = '256M'
+    classpath = sourceSets.main.runtimeClasspath
+
+    //    println classpath.asPath
+    //    String jarPath = relativePath(new File(libsDir, jar.archiveName))
+  }
+}
+
+task release(dependsOn: ['clean', 'copyLibs', 'copyRes', 'jar']) {
+  doLast {
+
+    ant.replace(
+        file: 'build/rangesliderexample.jnlp',
+        token: 'replace-build.number',
+        value: version
+    )
+
+    // Get passphrase from user input.
+    // TODO: Cannot get the password from the console, somehow pass is invalid
+    //    def console = System.console()
+    //    def passphrase = console.readPassword('%s: ', 'Please enter the storepass')
+
+    //    println '**' + passphrase + '**'
+
+    ant.signjar(
+        keystore: '/Users/hujol/jhkeystore',
+        storepass: 'change me',
+        alias: "jh",
+        keypass: 'change me'
+    ) {
+      fileset(dir: 'build/libs') {
+        include(name: '*.jar')
+      }
+      fileset(dir: 'build/libs') {
+        include(name: '*.zip')
+      }
+    }
+  }
+}
+
+configurations {
+  ftpAntTask
+}
+
+antLib = System.getenv('ANT_HOME') + '/lib'
+
+dependencies {
+  ftpAntTask files(
+      antLib + '/ant-commons-net_1.7.0.jar',
+      antLib + '/jakarta-oro-2.0.8.jar',
+      antLib + '/commons-net_1.4.1.jar'
+  )
+}
+
+atRemoteDir = 'rangeslider/'
+
+task ftp << {
+  //  def console = System.console()
+  //  def passphrase = console.readPassword('%s: ', 'Please enter the FTP password')
+
+  ant {
+    taskdef(
+        name: 'ftp',
+        classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
+        classpath: configurations.ftpAntTask.asPath
+    )
+    ftp(
+        server: "ftpperso.free.fr",
+        userid: "johnny.hujol",
+        password: 'change me',
+        action: 'send',
+        remotedir: atRemoteDir,
+        passive: true
+    ) {
+      fileset(dir: "build/libs")
+      fileset(file: "build/rangesliderexample.jnlp")
+    }
+  }
+}
