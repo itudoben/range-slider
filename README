@@ -1,5 +1,5 @@
 /*
- * RangeSlider allows a range selection from time line.
+ * RangeSlider allows a range selection from X axis.
  * Copyright (C) <2011-2012>  <itudoben at gmail dot com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-This project contains a range slider that allows selecting a range from a timeline as in the time range selector used in the Google stock page.
+This project contains a range slider that allows selecting a range from a X axis as in the time range selector used in the Google stock page.
 
 A Java webstart example can be launched from here:
 http://johnny.hujol.free.fr/rangeslider/

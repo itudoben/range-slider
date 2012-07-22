@@ -1,5 +1,5 @@
 /*
- * RangeSlider allows a range selection from time line.
+ * RangeSlider allows a range selection from X axis.
  * Copyright (C) <2011-2012>  <itudoben at gmail dot com>
  *
  * This program is free software: you can redistribute it and/or modify
