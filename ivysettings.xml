@@ -27,7 +27,7 @@
     <cache
         name="mycache"
         basedir="${user.home}/.ivycache"
-        artifactPattern="[artifact]-[revision].[ext]"
+        artifactPattern="[organisation]/[artifact]/[revision]/[artifact]-[revision].[ext]"
         lockStrategy="no-lock"
         />
 

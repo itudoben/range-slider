@@ -203,7 +203,7 @@ task downloadIvy << {
   }
 }
 
-task updateLibraryCachex(/*dependsOn: 'downloadIvy'*/) << {
+task getLibs(/*dependsOn: 'downloadIvy'*/) << {
 
   ivyLibPath = fileTree(dir: antUserLocalLib, include: '*.jar')
 
@@ -219,7 +219,6 @@ task updateLibraryCachex(/*dependsOn: 'downloadIvy'*/) << {
 
 // Properties used by Ivy for project.
   ant.properties['ivy.lib.dir'] = libDir
-
 
   def ivy = NamespaceBuilder.newInstance(ant, 'antlib:org.apache.ivy.ant')
   ivy.retrieve()
