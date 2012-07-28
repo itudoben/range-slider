@@ -103,18 +103,16 @@ task release(dependsOn: ['clean', 'copyLibs', 'copyRes', 'jar']) {
         value: version
     )
 
-    // Get passphrase from user input.
-    // TODO: Cannot get the password from the console, somehow pass is invalid
-    //    def console = System.console()
-    //    def passphrase = console.readPassword('%s: ', 'Please enter the storepass')
-
-    //    println '**' + passphrase + '**'
+    // Get signature passwords from user input.
+    def console = System.console()
+    def storepass = console.readPassword('%s: ', 'Please enter the storepass')
+    def keypass = console.readPassword('%s: ', 'Please enter the keypass')
 
     ant.signjar(
         keystore: env['KEYSTORE_JH'],
-        storepass: 'change me',
+        storepass: storepass as String,
         alias: env['KEYSTORE_JH_ALIAS'],
-        keypass: 'change me'
+        keypass: keypass as String
     ) {
       fileset(dir: 'build/libs') {
         include(name: '*.jar')
@@ -143,8 +141,11 @@ dependencies {
 atRemoteDir = 'rangeslider/'
 
 task ftp << {
-//    def console = System.console()
-//    def passphrase = console.readPassword('%s: ', 'Please enter the FTP password')
+
+  // Get FTP password.
+  def console = System.console()
+  def passphrase = console.readPassword('%s: ',
+      'Please enter the FTP password for ' + env['WEBSITE_FTP_USER_NAME'] + '@' + env['WEBSITE_FTP_SERVER'])
 
   ant {
     taskdef(
@@ -155,7 +156,7 @@ task ftp << {
     ftp(
         server: env['WEBSITE_FTP_SERVER'],
         userid: env['WEBSITE_FTP_USER_NAME'],
-        password: 'change me',
+        password: passphrase as String,
         action: 'send',
         remotedir: atRemoteDir,
         passive: true
