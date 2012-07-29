@@ -80,11 +80,14 @@ task copyRes(type: Copy) {
   into 'build'
 }
 
-task(run, dependsOn: "jar", type: JavaExec) {
+task(run, dependsOn: ['getLibs', 'jar'], type: JavaExec) {
   doFirst {
     main = 'com.jh.rangeslider.Application'
-    systemProperties = ['sswing.defaultlaf': 'com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel',
-        'com.apple.mrj.application.apple.menu.about.name': 'Range Slider Example']
+    systemProperties = [
+        'sswing.defaultlaf': 'com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel',
+        'com.apple.mrj.application.apple.menu.about.name': 'Range Slider Example',
+        'build.number': version
+    ]
     maxHeapSize = '256M'
     classpath = sourceSets.main.runtimeClasspath
 
@@ -107,6 +110,17 @@ task release(dependsOn: ['clean', 'copyLibs', 'copyRes', 'jar']) {
         file: 'build/rangesliderexample.jnlp',
         token: 'replace-build.number',
         value: version
+    )
+
+    def generateJarsJnlp = ""
+    sourceSets.main.runtimeClasspath
+        .filter { it.getName().endsWith(".jar")}
+        .each { generateJarsJnlp += '<jar href="' + it.getName() + '"/>\n'}
+
+    ant.replace(
+        file: 'build/rangesliderexample.jnlp',
+        token: 'generate-dependencies',
+        value: generateJarsJnlp
     )
 
     // Get signature passwords from user input.
@@ -205,13 +219,17 @@ task downloadIvy << {
   }
 }
 
+//    try to load ivy here from ivy home, in case the user has not already dropped
+//    it into ant's lib dir (note that the latter copy will always take precedence).
+//    We will not fail as long as local lib dir exists (it may be empty) and
+//    ivy is in at least one of ant's lib dir or the local lib dir.
 task getLibs(/*dependsOn: 'downloadIvy'*/) << {
 
   ivyLibPath = fileTree(dir: antUserLocalLib, include: '*.jar')
 
-  println '*** ivyLibPath: ' + ivyLibPath.asPath
-
-  ivyLibPath.each { println it }
+//  println '*** ivyLibPath: ' + ivyLibPath.asPath
+//
+//  ivyLibPath.each { println it }
 
   ant.taskdef(
       resource: 'org/apache/ivy/ant/antlib.xml',
@@ -219,30 +237,9 @@ task getLibs(/*dependsOn: 'downloadIvy'*/) << {
       classpath: ivyLibPath.asPath
   )
 
-// Properties used by Ivy for project.
+  // Properties used by Ivy for project.
   ant.properties['ivy.lib.dir'] = libDir
 
   def ivy = NamespaceBuilder.newInstance(ant, 'antlib:org.apache.ivy.ant')
   ivy.retrieve()
 }
-
-/*
-<target name="run-with-ivyx"
-        depends="cleanx, update-library-cachex"
-        >
-
-*/
-
-//    try to load ivy here from ivy home, in case the user has not already dropped
-//    it into ant's lib dir (note that the latter copy will always take precedence).
-//    We will not fail as long as local lib dir exists (it may be empty) and
-//    ivy is in at least one of ant's lib dir or the local lib dir.
-//
-//    <path id="ivy.lib.path">
-//        <fileset dir="${antUserLocalLib}" includes="*.jar"/>
-//    </path>
-//
-//    <taskdef resource="org/apache/ivy/ant/antlib.xml"
-//             uri="antlib:org.apache.ivy.ant"
-//             classpathref="ivy.lib.path"
-//            />

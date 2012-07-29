@@ -38,7 +38,7 @@
         />
     <property name="build.number" value="replace-build.number"/>
     <jar href="range-slider-replace-build.number.jar" main="true"/>
-    <!--<jar href="commons-collections_3.2.jar"/>-->
+    generate-dependencies
   </resources>
 
   <application-desc
