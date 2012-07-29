@@ -24,7 +24,9 @@ apply plugin: 'java'
 
 defaultTasks 'clean', 'compileTest'
 
-version = new SimpleDateFormat('yyyy.MM.dd.HHmmss').format(new Date())
+def df = new SimpleDateFormat('yyyy.MM.dd.HHmmss')
+df.setTimeZone(TimeZone.getTimeZone("GMT"));
+version = df.format(new Date())
 
 configurations {
   compile {
