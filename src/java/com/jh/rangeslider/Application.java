@@ -20,7 +20,9 @@ package com.jh.rangeslider;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.UIManager;
+
+import com.jh.rangeslider.swing.JRangeSlider;
 
 /**
  * @author <font size=-1 color="#a3a3a3">Johnny Hujol</font>
@@ -32,10 +34,18 @@ public final class Application extends JFrame {
     final Runnable runnable = new Runnable() {
       @Override
       public void run() {
+        try {
+          UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+        }
+        catch(Exception e) {
+          System.out.println("Couldn't load Motif L&F " + e);
+        }
+
         Application application = new Application();
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        application.setTitle("Range Slider Example - #" + System.getProperty("build.number"));
-        application.setContentPane(new JLabel("Range Slider Example"));
+        application.setTitle("Range Slider Example - #" + System.getProperty("build.number", "demo"));
+
+        application.getContentPane().add(new JRangeSlider());
 
         application.setLocationRelativeTo(null);
         application.setSize(400, 300);
