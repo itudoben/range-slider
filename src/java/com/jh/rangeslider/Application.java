@@ -18,8 +18,12 @@
 
 package com.jh.rangeslider;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import com.jh.rangeslider.swing.JRangeSlider;
@@ -45,10 +49,22 @@ public final class Application extends JFrame {
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         application.setTitle("Range Slider Example - #" + System.getProperty("build.number", "demo"));
 
-        application.getContentPane().add(new JRangeSlider());
+        final JRangeSlider jRangeSlider = new JRangeSlider();
+        jRangeSlider.setPreferredSize(new Dimension(400, 30));
+
+        JLabel label = new JLabel("Slider info: " + jRangeSlider.getmodel().toString());
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(label, BorderLayout.NORTH);
+
+        final JPanel pp = new JPanel();
+        pp.add(jRangeSlider);
+
+        panel.add(pp, BorderLayout.CENTER);
+        application.getContentPane().add(panel);
 
         application.setLocationRelativeTo(null);
-        application.setSize(400, 300);
+        application.setSize(800, 600);
         application.setVisible(true);
       }
     };

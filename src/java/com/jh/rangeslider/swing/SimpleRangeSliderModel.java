@@ -33,7 +33,6 @@ public final class SimpleRangeSliderModel extends DefaultBoundedRangeModel imple
   private int max = 100;
   private boolean isAdjusting = false;
 
-
   @Override
   public int getSecondValue() {
     return secondValue;
@@ -179,5 +178,19 @@ public final class SimpleRangeSliderModel extends DefaultBoundedRangeModel imple
   @Override
   public int getValue() {
     return value;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("SimpleRangeSliderModel");
+    sb.append("{extent=").append(extent);
+    sb.append(", value=").append(value);
+    sb.append(", secondValue=").append(secondValue);
+    sb.append(", min=").append(min);
+    sb.append(", max=").append(max);
+    sb.append(", isAdjusting=").append(isAdjusting);
+    sb.append('}');
+    return sb.toString();
   }
 }

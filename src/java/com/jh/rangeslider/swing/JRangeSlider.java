@@ -20,6 +20,8 @@ package com.jh.rangeslider.swing;
 
 import javax.swing.JComponent;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.jh.rangeslider.swing.plaf.BasicRangeSliderUI;
 import com.jh.rangeslider.swing.plaf.RangeSliderUI;
@@ -28,11 +30,15 @@ import com.jh.rangeslider.swing.plaf.RangeSliderUI;
  * @author <font size=-1 color="#a3a3a3">Johnny Hujol</font>
  * @since 7/29/12
  */
-public final class JRangeSlider extends JComponent {
+public final class JRangeSlider extends JComponent implements ChangeListener {
 
   private static final String uiClassID = "RangeSliderUI";
 
+  private RangeSliderModel model;
+
   public JRangeSlider() {
+    model = new SimpleRangeSliderModel();
+    model.addChangeListener(this);
     this.updateUI();
   }
 
@@ -57,5 +63,14 @@ public final class JRangeSlider extends JComponent {
 
   public RangeSliderUI getUI() {
     return (RangeSliderUI)ui;
+  }
+
+  public RangeSliderModel getmodel() {
+    return model;
+  }
+
+  @Override
+  public void stateChanged(ChangeEvent changeEvent) {
+    repaint();
   }
 }

@@ -22,7 +22,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.JComponent;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.ComponentUI;
 
 /**
  * @author <font size=-1 color="#a3a3a3">Johnny Hujol</font>
@@ -35,16 +34,19 @@ public final class BasicRangeSliderUI extends RangeSliderUI {
   public BasicRangeSliderUI() {
   }
 
-  public static ComponentUI createUI(JComponent c) {
-    return m_buttonUI;
-  }
-
   @Override
   public void paint(Graphics graphics, JComponent c) {
     super.paint(graphics, c);
 
+    graphics.setColor(Color.blue);
+    graphics.drawRect(0, 0, c.getWidth() - 1, c.getHeight() - 1);
+
+    final int x = 5;
+    final int y = (c.getHeight() - 5) / 2;
+    final int w = c.getWidth() - 2 * x;
+    final int h = 5;
     graphics.setColor(Color.red);
-    graphics.fillRect(0, 0, c.getWidth(), c.getHeight());
+    graphics.fillRect(x, y, w, h);
   }
 
   @Override
