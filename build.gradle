@@ -48,6 +48,15 @@ sourceSets {
       srcDir 'res'
     }
   }
+
+  test {
+    java {
+      srcDir 'test/java'
+    }
+    resources {
+      srcDir 'res'
+    }
+  }
 }
 
 libDir = 'libs'
@@ -125,8 +134,8 @@ task release(dependsOn: ['clean', 'copyLibs', 'copyRes', 'jar']) {
 
     // Get signature passwords from user input.
     def console = System.console()
-    def storepass = console.readPassword('%s: ', 'Please enter the storepass')
-    def keypass = console.readPassword('%s: ', 'Please enter the keypass')
+    def storepass = console.readPassword('%s: ', 'Please enter \'' + env['KEYSTORE_JH'] + '\' keystore password')
+    def keypass = console.readPassword('%s: ', 'Please enter \'' + env['KEYSTORE_JH_ALIAS'] + '\' alias password')
 
     ant.signjar(
         keystore: env['KEYSTORE_JH'],
@@ -165,7 +174,7 @@ task ftp << {
   // Get FTP password.
   def console = System.console()
   def passphrase = console.readPassword('%s: ',
-      'Please enter the FTP password for ' + env['WEBSITE_FTP_USER_NAME'] + '@' + env['WEBSITE_FTP_SERVER'])
+      'Please enter ' + env['WEBSITE_FTP_USER_NAME'] + '@' + env['WEBSITE_FTP_SERVER'] + ' password')
 
   ant {
     taskdef(

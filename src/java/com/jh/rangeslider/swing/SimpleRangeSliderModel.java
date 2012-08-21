@@ -18,47 +18,166 @@
 
 package com.jh.rangeslider.swing;
 
-import java.io.Serializable;
-import java.util.EventListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.EventListenerList;
+import javax.swing.DefaultBoundedRangeModel;
 
 /**
  * @author <font size=-1 color="#a3a3a3">Johnny Hujol</font>
  * @since 7/29/12
  */
-public class SimpleRangeSliderModel implements RangeSliderModel, Serializable {
+public final class SimpleRangeSliderModel extends DefaultBoundedRangeModel implements RangeSliderModel {
 
-  private EventListenerList listenerList = new EventListenerList();
-  private transient ChangeEvent changeEvent = null;
+  private int value = 0;
+  private int secondValue = 0;
+  private int extent = 0;
+  private int min = 0;
+  private int max = 100;
+  private boolean isAdjusting = false;
 
-  protected void fireStateChanged() {
-    Object[] listeners = listenerList.getListenerList();
-    for(int i = listeners.length - 2; i >= 0; i -= 2) {
-      if(listeners[i] == ChangeListener.class) {
-        if(changeEvent == null) {
-          changeEvent = new ChangeEvent(this);
-        }
-        ((ChangeListener)listeners[i + 1]).stateChanged(changeEvent);
-      }
+
+  @Override
+  public int getSecondValue() {
+    return secondValue;
+  }
+
+  @Override
+  public void setSecondValue(int n) {
+    n = Math.min(n, Integer.MAX_VALUE - extent);
+
+    int newValue = Math.max(n, min);
+    if(newValue + extent > max) {
+      newValue = max - extent;
+    }
+    setRangeProperties(value, newValue, extent, min, max, isAdjusting);
+  }
+
+  @Override
+  public void setExtent(int n) {
+    int newExtent = Math.max(0, n);
+    if(value + newExtent > max) {
+      newExtent = max - value;
+    }
+    if(secondValue + newExtent > max) {
+      newExtent = max - secondValue;
+    }
+    setRangeProperties(value, secondValue, newExtent, min, max, isAdjusting);
+  }
+
+  @Override
+  public void setMaximum(int n) {
+    int newMin = Math.min(n, min);
+    int newExtent = Math.min(n - newMin, extent);
+    int newValue = Math.min(n - newExtent, value);
+    int newSecondValue = Math.min(n - newExtent, secondValue);
+    setRangeProperties(newValue, newSecondValue, newExtent, newMin, n, isAdjusting);
+  }
+
+  @Override
+  public void setMinimum(int n) {
+    int newMax = Math.max(n, max);
+    int newValue = Math.max(n, value);
+    int newExtent = Math.min(newMax - newValue, extent);
+    int newSecondValue = Math.max(n, secondValue);
+    newExtent = Math.min(newMax - newSecondValue, newExtent);
+    setRangeProperties(newValue, newSecondValue, newExtent, n, newMax, isAdjusting);
+  }
+
+  @Override
+  public void setRangeProperties(int newValue, int newExtent, int newMin, int newMax, boolean adjusting) {
+    setRangeProperties(newValue, newValue, newExtent, newMin, newMax, adjusting);
+  }
+
+  @Override
+  public void setValue(int n) {
+    n = Math.min(n, Integer.MAX_VALUE - extent);
+
+    int newValue = Math.max(n, min);
+    if(newValue + extent > max) {
+      newValue = max - extent;
+    }
+    setRangeProperties(newValue, secondValue, extent, min, max, isAdjusting);
+  }
+
+  @Override
+  public void setValueIsAdjusting(boolean b) {
+    setRangeProperties(value, secondValue, extent, min, max, b);
+  }
+
+  @Override
+  public void setRangeProperties(int newValue, int newSecondValue, int newExtent, int newMin, int newMax, boolean adjusting) {
+    if(newMin > newMax) {
+      newMin = newMax;
+    }
+    if(newValue > newMax) {
+      newMax = newValue;
+    }
+    if(newValue < newMin) {
+      newMin = newValue;
+    }
+    if(newSecondValue > newMax) {
+      newMax = newSecondValue;
+    }
+    if(newSecondValue < newMin) {
+      newMin = newSecondValue;
+    }
+
+    /* Convert the addends to long so that extent can be
+    * Integer.MAX_VALUE without rolling over the sum.
+    * A JCK test covers this, see bug 4097718.
+    */
+    if((long)newExtent + (long)newValue > newMax) {
+      newExtent = newMax - newValue;
+    }
+
+    if((long)newExtent + (long)newSecondValue > newMax) {
+      newExtent = newMax - newSecondValue;
+    }
+
+    if(newExtent < 0) {
+      newExtent = 0;
+    }
+
+    boolean isChange =
+        (newValue != value) ||
+            (newSecondValue != secondValue) ||
+            (newExtent != extent) ||
+            (newMin != min) ||
+            (newMax != max) ||
+            (adjusting != isAdjusting);
+
+    if(isChange) {
+      value = newValue;
+      secondValue = newSecondValue;
+      extent = newExtent;
+      min = newMin;
+      max = newMax;
+      isAdjusting = adjusting;
+
+      fireStateChanged();
     }
   }
 
-  public final void addChangeListener(ChangeListener l) {
-    listenerList.add(ChangeListener.class, l);
+  @Override
+  public int getExtent() {
+    return extent;
   }
 
-  public final void removeChangeListener(ChangeListener l) {
-    listenerList.remove(ChangeListener.class, l);
+  @Override
+  public boolean getValueIsAdjusting() {
+    return isAdjusting;
   }
 
-  public final ChangeListener[] getChangeListeners() {
-    return (ChangeListener[])listenerList.getListeners(
-        ChangeListener.class);
+  @Override
+  public int getMaximum() {
+    return max;
   }
 
-  public <T extends EventListener> T[] getListeners(Class<T> listenerType) {
-    return listenerList.getListeners(listenerType);
+  @Override
+  public int getMinimum() {
+    return min;
+  }
+
+  @Override
+  public int getValue() {
+    return value;
   }
 }
