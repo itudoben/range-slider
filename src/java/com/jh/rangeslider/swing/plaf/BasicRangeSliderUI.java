@@ -66,6 +66,7 @@ public final class BasicRangeSliderUI extends RangeSliderUI {
   private Handler handler = null;
   private Polygon thumbValuePolygon = null;
   private Polygon thumbSecondValuePolygon = null;
+  private Rectangle thumbRect;
 
   public BasicRangeSliderUI() {
   }
@@ -110,12 +111,19 @@ public final class BasicRangeSliderUI extends RangeSliderUI {
   }
 
   private void calculateContentRect() {
+    final int width = rangeSlider.getWidth();
+    final int height = rangeSlider.getHeight();
+    if(0 == width || 0 == height) {
+      contentRect.x = contentRect.y = contentRect.width = contentRect.height = 0;
+      return;
+    }
+
     final int paddingHorizontal = 8;
 
     contentRect.x = insetCache.left + paddingHorizontal;
     contentRect.y = insetCache.top;
-    contentRect.width = rangeSlider.getWidth() - (insetCache.left + insetCache.right + 2 * paddingHorizontal);
-    contentRect.height = rangeSlider.getHeight() - (insetCache.top + insetCache.bottom);
+    contentRect.width = Math.max(0, width - (insetCache.left + insetCache.right + 2 * paddingHorizontal));
+    contentRect.height = Math.max(0, height - (insetCache.top + insetCache.bottom));
 
 //    contentRect.x = 5;
 //    contentRect.y = (rangeSlider.getHeight() - 5) / 2;
@@ -124,11 +132,16 @@ public final class BasicRangeSliderUI extends RangeSliderUI {
   }
 
   private void calculateTrackRect() {
+    if(0 == contentRect.width || 0 == contentRect.height) {
+      trackRect.x = trackRect.y = trackRect.width = trackRect.height = 0;
+      return;
+    }
+
     int centerSpacing = 0;
 
     trackRect.height = 5;
     trackRect.x = contentRect.x;
-    trackRect.y = contentRect.y + (contentRect.height - centerSpacing - trackRect.height) / 2;
+    trackRect.y = Math.max(0, contentRect.y + (contentRect.height - centerSpacing - trackRect.height) / 2);
     trackRect.width = contentRect.width;
   }
 
@@ -149,13 +162,21 @@ public final class BasicRangeSliderUI extends RangeSliderUI {
   }
 
   private void setThumbRectangle(final int value, final Rectangle thumbRect) {
+    if(0 == trackRect.width || 0 == trackRect.height) {
+      thumbRect.x = 0;
+      thumbRect.width = 0;
+      thumbRect.y = 0;
+      thumbRect.height = 0;
+      return;
+    }
+
     final int thumbWidth = 14;
     final int thumbHeight = 20 + trackRect.height;
 
     final int sliderValue = modelValueToSliderValue(value);
 //    final int thumbHeight = (int)(contentRect.height * .8);
-    thumbRect.x = sliderValue - thumbWidth / 2;
-    thumbRect.y = trackRect.y - (thumbHeight - trackRect.height) / 2;
+    thumbRect.x = Math.max(0, sliderValue - thumbWidth / 2);
+    thumbRect.y = Math.max(0, trackRect.y - (thumbHeight - trackRect.height) / 2);
     thumbRect.width = thumbWidth;
     thumbRect.height = thumbHeight;
   }
@@ -170,6 +191,10 @@ public final class BasicRangeSliderUI extends RangeSliderUI {
     paintTrackRectangle(g);
     paintThumbs(g);
 
+//    System.out.println(rangeSlider.getModel().getValue());
+//    System.out.println(thumbValuePolygon);
+//    System.out.println(thumbValueRect);
+//
 //    Rectangle clip = g.getClipBounds();
 
 //    if(!clip.intersects(trackRect) && rangeSlider.getPaintTrack()) {
@@ -315,6 +340,12 @@ public final class BasicRangeSliderUI extends RangeSliderUI {
 
       @Override
       public void mousePressed(MouseEvent e) {
+        final Rectangle tmp = getThumbRectMouseIsOver(e);
+
+        if(null != tmp) {
+          thumbRect = tmp;
+        }
+
         processMouseEvent(e);
       }
 
@@ -353,9 +384,8 @@ public final class BasicRangeSliderUI extends RangeSliderUI {
     final RangeSliderModel model = rangeSlider.getModel();
     model.setValueIsAdjusting(true);
 
-    Rectangle thumbRect = getThumbRectMouseIsOver(e);
-
     final int modelValue = sliderValueToModelValue(e.getX());
+    System.out.println(modelValue);
 
     if(null == thumbRect) {
       // TODO: get the extent to move it up or down the range if modelValue is not in [value; secondValue]
@@ -365,6 +395,7 @@ public final class BasicRangeSliderUI extends RangeSliderUI {
       {
         if(BasicRangeSliderUI.this.thumbValueRect == thumbRect) {
           model.setValue(modelValue);
+//          calculateThumbRect();
         }
         else if(BasicRangeSliderUI.this.thumbSecondValueRect == thumbRect) {
           model.setSecondValue(modelValue);

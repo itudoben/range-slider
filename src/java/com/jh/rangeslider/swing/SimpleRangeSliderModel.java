@@ -93,6 +93,7 @@ public final class SimpleRangeSliderModel extends DefaultBoundedRangeModel imple
     if(newValue + extent > max) {
       newValue = max - extent;
     }
+
     setRangeProperties(newValue, secondValue, extent, min, max, isAdjusting);
   }
 
@@ -103,6 +104,12 @@ public final class SimpleRangeSliderModel extends DefaultBoundedRangeModel imple
 
   @Override
   public void setRangeProperties(int newValue, int newSecondValue, int newExtent, int newMin, int newMax, boolean adjusting) {
+    /*
+    Need to respect
+    minimum <= value <= value+extent <= maximum
+    minimum <= secondValue <= secondValue+extent <= maximum
+     */
+
     if(newMin > newMax) {
       newMin = newMax;
     }
@@ -112,6 +119,7 @@ public final class SimpleRangeSliderModel extends DefaultBoundedRangeModel imple
     if(newValue < newMin) {
       newMin = newValue;
     }
+
     if(newSecondValue > newMax) {
       newMax = newSecondValue;
     }

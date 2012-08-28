@@ -39,6 +39,8 @@ import javax.swing.JSlider;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 
 import com.google.common.collect.Lists;
@@ -71,7 +73,7 @@ public final class Application extends JFrame {
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         application.setTitle("Range Slider Example - #" + System.getProperty("build.number", "demo"));
 
-        JLabel label = new JLabel();
+        final JLabel label = new JLabel("Start");
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(label, BorderLayout.NORTH);
@@ -80,6 +82,8 @@ public final class Application extends JFrame {
         pp.setLayout(new BoxLayout(pp, BoxLayout.PAGE_AXIS));
 
         final JRangeSlider jRangeSlider = new JRangeSlider();
+        jRangeSlider.getModel().setExtent(0);
+
         final Dimension d = new Dimension(450, 61);
         jRangeSlider.setSize(d);
         jRangeSlider.setPreferredSize(d);
@@ -109,7 +113,12 @@ public final class Application extends JFrame {
         application.setSize(800, 600);
         application.setVisible(true);
 
-        label.setText("Slider info: " + jRangeSlider.getModel().toString());
+        jRangeSlider.getModel().addChangeListener(new ChangeListener() {
+          @Override
+          public void stateChanged(ChangeEvent changeEvent) {
+            label.setText("Slider info: " + jRangeSlider.getModel().toString());
+          }
+        });
       }
     };
     EventQueue.invokeLater(runnable);
