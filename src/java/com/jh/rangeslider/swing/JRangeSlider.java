@@ -65,12 +65,12 @@ public final class JRangeSlider extends JComponent implements ChangeListener {
     return (RangeSliderUI)ui;
   }
 
-  public RangeSliderModel getmodel() {
-    return model;
-  }
-
   @Override
   public void stateChanged(ChangeEvent changeEvent) {
     repaint();
+  }
+
+  public RangeSliderModel getModel() {
+    return model;
   }
 }

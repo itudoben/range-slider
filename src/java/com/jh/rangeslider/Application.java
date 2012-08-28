@@ -19,13 +19,29 @@
 package com.jh.rangeslider;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Insets;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.InputMap;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.text.JTextComponent;
 
+import com.google.common.collect.Lists;
 import com.jh.rangeslider.swing.JRangeSlider;
 
 /**
@@ -39,26 +55,52 @@ public final class Application extends JFrame {
       @Override
       public void run() {
         try {
-          UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+//          UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+//          UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+//          UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+          UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
         }
         catch(Exception e) {
           System.out.println("Couldn't load Motif L&F " + e);
         }
 
+//        printUIDefaults();
+//        if (true) return;
+
         Application application = new Application();
         application.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         application.setTitle("Range Slider Example - #" + System.getProperty("build.number", "demo"));
 
-        final JRangeSlider jRangeSlider = new JRangeSlider();
-        jRangeSlider.setPreferredSize(new Dimension(400, 30));
-
-        JLabel label = new JLabel("Slider info: " + jRangeSlider.getmodel().toString());
+        JLabel label = new JLabel();
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(label, BorderLayout.NORTH);
 
         final JPanel pp = new JPanel();
-        pp.add(jRangeSlider);
+        pp.setLayout(new BoxLayout(pp, BoxLayout.PAGE_AXIS));
+
+        final JRangeSlider jRangeSlider = new JRangeSlider();
+        final Dimension d = new Dimension(450, 61);
+        jRangeSlider.setSize(d);
+        jRangeSlider.setPreferredSize(d);
+        jRangeSlider.setBorder(BorderFactory.createMatteBorder(10, 10, 10, 10, Color.GREEN));
+
+        JPanel pan = new JPanel();
+        pan.add(jRangeSlider);
+
+        pp.add(pan);
+        pp.add(Box.createVerticalStrut(10));
+
+        final JSlider jSlider = new JSlider();
+        jSlider.setSize(d);
+        jSlider.setPreferredSize(d);
+        jSlider.setBorder(BorderFactory.createMatteBorder(10, 10, 10, 10, Color.YELLOW));
+
+        JPanel pan2 = new JPanel();
+        pan2.add(jSlider);
+
+        pp.add(pan2);
+        pp.add(Box.createVerticalGlue());
 
         panel.add(pp, BorderLayout.CENTER);
         application.getContentPane().add(panel);
@@ -66,8 +108,64 @@ public final class Application extends JFrame {
         application.setLocationRelativeTo(null);
         application.setSize(800, 600);
         application.setVisible(true);
+
+        label.setText("Slider info: " + jRangeSlider.getModel().toString());
       }
     };
     EventQueue.invokeLater(runnable);
+  }
+
+  private static void printUIDefaults() {
+    UIDefaults uidefs = UIManager.getLookAndFeelDefaults();
+    List<Object> keys = Lists.newArrayList(uidefs.keySet());
+
+    Collections.sort(keys, new Comparator<Object>() {
+      @Override
+      public int compare(Object o, Object o1) {
+        return o.toString().toLowerCase().compareTo(o1.toString().toLowerCase());
+      }
+    });
+
+    for(Object key : keys) {
+      Object v = uidefs.get(key);
+      System.out.println(String.format("%s: %S", key, v));
+      if(v instanceof Integer) {
+        int intVal = uidefs.getInt(key);
+      }
+      else if(v instanceof Boolean) {
+        boolean boolVal = uidefs.getBoolean(key);
+      }
+      else if(v instanceof String) {
+        String strVal = uidefs.getString(key);
+      }
+      else if(v instanceof Dimension) {
+        Dimension dimVal = uidefs.getDimension(key);
+      }
+      else if(v instanceof Insets) {
+        Insets insetsVal = uidefs.getInsets(key);
+      }
+      else if(v instanceof Color) {
+        Color colorVal = uidefs.getColor(key);
+      }
+      else if(v instanceof Font) {
+        Font fontVal = uidefs.getFont(key);
+      }
+      else if(v instanceof Border) {
+        Border borderVal = uidefs.getBorder(key);
+      }
+      else if(v instanceof Icon) {
+        Icon iconVal = uidefs.getIcon(key);
+      }
+      else if(v instanceof JTextComponent.KeyBinding[]) {
+        JTextComponent.KeyBinding[] keyBindsVal = (JTextComponent.KeyBinding[])uidefs
+            .get(key);
+      }
+      else if(v instanceof InputMap) {
+        InputMap imapVal = (InputMap)uidefs.get(key);
+      }
+      else {
+        System.out.println("Unknown type");
+      }
+    }
   }
 }

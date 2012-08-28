@@ -26,9 +26,9 @@ import javax.swing.DefaultBoundedRangeModel;
  */
 public final class SimpleRangeSliderModel extends DefaultBoundedRangeModel implements RangeSliderModel {
 
-  private int value = 0;
-  private int secondValue = 0;
-  private int extent = 0;
+  private int value = 33;
+  private int secondValue = 66;
+  private int extent = 10;
   private int min = 0;
   private int max = 100;
   private boolean isAdjusting = false;
